@@ -3,9 +3,3 @@ __pycache__/
 *.py[cod]
 *$py.class
 .DS_Store
-
-# Caches
-.pytest_cache/
-.coverage
-.mypy_cache/
-.ruff_cache/

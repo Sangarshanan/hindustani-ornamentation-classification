@@ -6,5 +6,3 @@ https://www.youtube.com/shorts/h2A_mxvx7Vw
 
 https://www.youtube.com/watch?v=qcoNeuYsxHA
 
-
-
