@@ -8,10 +8,10 @@ import pandas as pd
 import numpy as np
 import time
 import matplotlib.pyplot as plt
-from ragas_and_swaras import *
-from ornamentation import *
-import quantization as quant
-from ground_truth_preprocessing import *
+from algorithm.ragas_and_swaras import *
+from algorithm.ornamentation import *
+import algorithm.quantization as quant
+from algorithm.ground_truth_preprocessing import *
  
 class Raga:
 
@@ -28,6 +28,43 @@ class Raga:
 		self.ornamentation=None
 		self.eval_df=[]
 
+
+	@classmethod
+	def from_dataframe(cls, df_pitch, sa_freq, raga_idx):
+		"""
+		Alternative constructor that accepts in-memory pitch data directly,
+		avoiding the need to write/read intermediate pitch.txt and ctonic.txt files.
+
+		Args:
+			df_pitch: DataFrame with 'time' and 'f0' columns (from compiam pitch CSV).
+			sa_freq: Tonic frequency in Hz.
+			raga_idx: Index of the raga in ragas_and_swaras.
+		"""
+		# Create a minimal dummy pitches_path just to satisfy __init__ signature.
+		# We won't actually read from these paths.
+		dummy_paths = [""] * (raga_idx + 1)
+		raga = cls(idx=raga_idx, pitches_path=dummy_paths)
+
+		# Set tonic directly
+		raga.sa = sa_freq
+
+		# Set raga notes (swaras, log_freq) based on index
+		raga.get_raga_notes(raga_idx)
+
+		# Populate df_f0 directly from the provided DataFrame
+		raga.df_f0 = df_pitch.copy()
+		raga.df_f0["log_freq"] = raga.df_f0["f0"].apply(lambda x: np.log2(x) if x != 0 else 0)
+		raga.df_f0["silences"] = raga.silence_column(
+			raga.df_f0["f0"],
+			raga.df_f0["time"].iloc[1] - raga.df_f0["time"].iloc[0]
+		)
+
+		# Detect phrases using the same logic as get_phrases
+		silences = np.where(raga.df_f0["f0"] == 0.0)[0]
+		raga.phrases, raga.silences = make_phrases_500ms_tresh(silences, raga.df_f0)
+
+		raga.raga_name = f"raga_{raga_idx}"
+		return raga
 
 	def set_raga_object(self, pitches_path, ctonic_path):
 		# xxx: make public

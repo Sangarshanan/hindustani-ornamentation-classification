@@ -80,7 +80,16 @@ def df_to_anno(df):
     anno['duration'] = anno['time_e'] - anno['time_s']
     return anno
 
-def fetch_ornamentations(track_id="66_Aahir_Bhairon", annotation_file="Ornamentation-In-Hindustani-Vocals-Dataset/AahirBhairon_av.csv", num_to_show=5):
+def fetch_ornamentations(raga_name="Aahir Bhairon", num_to_show=5):
+    from mapping import MAPPING
+    if raga_name not in MAPPING:
+        print(f"Raga '{raga_name}' not found in mapping.py")
+        return
+        
+    data = MAPPING[raga_name]
+    track_id = data["track_id"]
+    annotation_file = f"Ornamentation-In-Hindustani-Vocals-Dataset/{list(data['annotators'].values())[0]}"
+
     # Set dataset path
     data_home = "/Users/sangarshananveera/Downloads/Datasets"
 

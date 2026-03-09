@@ -8,65 +8,87 @@ import librosa
 MAPPING = {
     "Aahir Bhairon": {
         "audio_path": "Geetinandan : Part-3 by Ajoy Chakrabarty/Aahir Bhairon/Aahir Bhairon",
+        "track_id": "66_Aahir_Bhairon",
+        "raga_idx": 19,  # ahir_bhairon
         "annotators": {"av": "AahirBhairon_av.csv"}
     },
-    
+
     "Bairagi": {
         "audio_path": "New Signature by Brajeshwar Mukherjee/Raag Bairagi/Raag Bairagi",
+        "track_id": "51_Raag_Bairagi",
+        "raga_idx": 4,  # bairagi
         "annotators": {"rj": "Bairagi_rj.csv"}
     },
-    
+
     "Bhairavi Dadra": {
         "audio_path": "Raag Bihag & Bhairavi Dadra by Omkar Dadarkar/Bhairavi Dadra/Bhairavi Dadra",
+        "track_id": "80_Bhairavi_Dadra",
+        "raga_idx": 8,  # bhairavi_dadra
         "annotators": {"av": "BhairaviDadr_av.csv"}
     },
-    
+
     "Irani Bhairavi Thumri": {
         "audio_path": "New Signature by Brajeshwar Mukherjee/Irani Bhairavi Thumri/Irani Bhairavi Thumri",
+        "track_id": "50_Irani_Bhairavi_Thumri",
+        "raga_idx": 5,  # irani_bhairavi
         "annotators": {
-            "sb": "Irani Bhairavi Thumri_sb.csv", 
+            "sb": "Irani Bhairavi Thumri_sb.csv",
             "av": "IraniBhairaviThumri_av.csv"
         }
     },
-    
+
     "Kalavati": {
         "audio_path": "Geetinandan : Part-3 by Ajoy Chakrabarty/Kalavati/Kalavati",
+        "track_id": "73_Kalavati",
+        "raga_idx": 52,  # kalavati
         "annotators": {"vi": "Kalavati_vi.csv"}
     },
-    
+
     "Malkauns": {
         "audio_path": "Raag Malkauns, Chandrakauns & Majh Khamaj Thumri by Satyasheel Deshpande/Raag Malkauns/Raag Malkauns",
+        "track_id": "56_Raag_Malkauns",
+        "raga_idx": 18,  # malkauns
         "annotators": {
-            "sb": "Malkauns_sb.csv", 
+            "sb": "Malkauns_sb.csv",
             "vh": "malkauns_vh.csv"
         }
     },
-    
+
     "Chandrakauns": {
         "audio_path": "Raag Malkauns, Chandrakauns & Majh Khamaj Thumri by Satyasheel Deshpande/Raag Chandrakauns/Raag Chandrakauns",
+        "track_id": "54_Raag_Chandrakauns",
+        "raga_idx": 14,  # chandrakauns
         "annotators": {
-            "SnehaBhat": "Raag Chandrakauns_SnehaBhat.csv", 
+            "SnehaBhat": "Raag Chandrakauns_SnehaBhat.csv",
             "av": "RaagChandrakauns_av.csv"
         }
     },
-    
+
     "Majh Khamaj Thumri": {
         "audio_path": "Raag Malkauns, Chandrakauns & Majh Khamaj Thumri by Satyasheel Deshpande/Majh Khamaj Thumri/Majh Khamaj Thumri",
+        "track_id": "55_Majh_Khamaj_Thumri",
+        "raga_idx": 17,  # majh_khamaj_thumri
         "annotators": {"vh": "manjkhamaj_vh.csv"}
     },
-    
+
     "Nat Bhairon": {
         "audio_path": "Geetinandan : Part-3 by Ajoy Chakrabarty/Nat Bhairon/Nat Bhairon",
+        "track_id": "65_Nat_Bhairon",
+        "raga_idx": 32,  # nat_bhairav (closest match)
         "annotators": {"vh": "natbhairon_vh.csv"}
     },
-    
+
     "Raageshree": {
         "audio_path": "Geetinandan : Part-3 by Ajoy Chakrabarty/Raageshree/Raageshree",
+        "track_id": "68_Raageshree",
+        "raga_idx": 39,  # raageshree
         "annotators": {"vh": "raageshree_vh.csv"}
     },
-    
+
     "Todi": {
         "audio_path": "Raag Todi by Kumar Gandharva/Raag Todi/Raag Todi",
+        "track_id": "53_Raag_Todi",
+        "raga_idx": 28,  # todi
         "annotators": {"dp": "todi_dp.csv"}
     },
 }

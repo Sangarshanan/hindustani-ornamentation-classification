@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 
-from quantization import *
+from algorithm.quantization import *
 
 import warnings
 warnings.filterwarnings('ignore')
