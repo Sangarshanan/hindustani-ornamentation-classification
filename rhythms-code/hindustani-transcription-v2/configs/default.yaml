@@ -1,0 +1,39 @@
+# Configuration for Hindustani Vocal Transcription
+# Reference: Jain & Arthur (2023) DLfM. DOI: 10.1145/3625135.3625137
+
+preprocessing:
+  shruti_threshold_cents: 35          # Ganguli et al. (2016) ISMIR, cited in paper Section 3.2
+  octaves: 3
+  tuning: just_intonation
+
+segmentation:
+  silence_threshold_hz: 0
+  min_silence_duration_ms: 500        # Phrase boundary at >=500ms silence
+
+adaptive_windowing:
+  enabled: true                       # KEY CONTRIBUTION — set false for ablation
+  base_frame_ms: 250                  # Paper's original static value (Section 3.1)
+  base_hop_ms: 22                     # Paper's original static value
+  min_frame_ms: 100                   # Lower bound (London 2002, Music Perception)
+  max_frame_ms: 500                   # Upper bound for slow alap sections
+  density_window_s: 2.0               # Look-back window for local note density estimation
+  density_smoothing_frames: 5
+  alpha: 2.0                          # Scaling factor for density-to-frame mapping
+
+ornamentation:
+  instability_threshold: 0.1          # Paper Section 3.2
+  min_merge_gap_samples: 3
+  kan_max_duration_ms: 250
+  andolan_max_unique_pitches: 3
+  moving_average_window: 5            # Smoothing kernel width for instability curve
+
+evaluation:
+  ornament_boundary_tolerance_s: 0.5  # Turnbull et al. (2007) ISMIR, paper Section 4.2
+  ld_insertion_weight: 0.5            # Daniel et al. (2008) ISMIR, paper Section 4.1
+  ld_deletion_weight: 0.5
+  ld_substitution_weight: 1.0
+
+data:
+  saraga_data_home: "../Saraga/f0-annotations"       # Local Saraga annotations
+  ohv_data_path: "../Ornamentation-In-Hindustani-Vocals-Dataset"  # OHV CSV files
+  f0_sample_period_s: 0.004444444     # Saraga f0 sampling period (~225 Hz)
