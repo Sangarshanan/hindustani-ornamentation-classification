@@ -8,10 +8,12 @@ Saraga dataset: Srinivasamurthy et al. (2021) EMR. DOI: 10.18061/emr.v16i1.7492
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Dict, List, Optional
 
 import numpy as np
+import pandas as pd
 import yaml
 
 
@@ -132,3 +134,165 @@ def hz_to_cents(f: np.ndarray, ref: float) -> np.ndarray:
 def cents_to_ratio(cents: float) -> float:
     """Convert a cent value to a frequency ratio."""
     return 2.0 ** (cents / 1200.0)
+
+
+# ---------------------------------------------------------------------------
+# Ornamentation annotation helpers
+# ---------------------------------------------------------------------------
+ORNAMENT_MAPPING = {
+    "k": "Kan",
+    "g": "Gamak",
+    "mu": "Murki",
+    "me": "Meend",
+    "a": "Andolan",
+    "kh": "Khatka",
+    "z": "Zamzama",
+    "o": "Other",
+}
+
+# Locate the ornament_classification project root at import time.
+# For editable installs __file__ lives in the source tree and we can walk
+# up.  For regular (site-packages) installs we fall back to a well-known
+# absolute path derived from setup.py's location stored at install time.
+_OHV_DIR_NAME = "Ornamentation-In-Hindustani-Vocals-Dataset"
+
+
+def _find_project_root() -> Path:
+    """Walk ancestors of __file__ looking for the OHV dataset directory."""
+    p = Path(__file__).resolve().parent
+    for _ in range(10):
+        if (p / _OHV_DIR_NAME).is_dir():
+            return p
+        p = p.parent
+    # Fallback: known location for this workspace
+    known = Path("/Users/sangarshananveera/dev/notebooks/flute-transcription/ornament_classification")
+    if (known / _OHV_DIR_NAME).is_dir():
+        return known
+    return Path.cwd()
+
+
+_PROJECT_ROOT = _find_project_root()
+
+
+def df_to_anno(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Parse an annotation CSV into a structured DataFrame with start/end times.
+    """
+    all_index = []
+    df.columns = ["time", "label"]
+
+    for index, label in enumerate(df.label):
+        if label == "none" or label == "" or label == "Q":
+            all_index.append(index)
+
+    df_new = df.drop(all_index).reset_index(drop=True)
+
+    time_s, time_e, labels = [], [], []
+
+    for i in range(0, len(df_new) - 1, 2):
+        s, e = i, i + 1
+        label_s = str(df_new["label"].iloc[s])
+        label_e = str(df_new["label"].iloc[e])
+
+        if label_s.endswith("_s") and label_e.endswith("_e"):
+            time_s.append(df_new["time"].iloc[s])
+            time_e.append(df_new["time"].iloc[e])
+
+            raw_label = label_s[:-2]
+            if raw_label.startswith("c_"):
+                parts = raw_label.split("_")[1:]
+                mapped_parts = [ORNAMENT_MAPPING.get(p, p) for p in parts]
+                labels.append(" + ".join(mapped_parts))
+            else:
+                labels.append(ORNAMENT_MAPPING.get(raw_label, raw_label))
+        else:
+            print(
+                f"Warning: Unexpected pair at index {i}: {label_s}, {label_e}"
+            )
+
+    anno = pd.DataFrame({"time_s": time_s, "time_e": time_e, "label": labels})
+    anno["duration"] = anno["time_e"] - anno["time_s"]
+    return anno
+
+
+def fetch_ornamentations(raga_name: str = "Aahir Bhairon", num_to_show: int = 5):
+    """Load a Saraga Hindustani track and display ornamentation segments."""
+    import compiam
+    import librosa
+    import matplotlib.pyplot as plt
+    from IPython.display import Audio, display
+    from hcm_transcription.mapping import MAPPING
+
+    if raga_name not in MAPPING:
+        print(f"Raga '{raga_name}' not found in mapping.py")
+        return
+
+    data = MAPPING[raga_name]
+    track_id = data["track_id"]
+    annotation_file = _PROJECT_ROOT / "Ornamentation-In-Hindustani-Vocals-Dataset" / list(data["annotators"].values())[0]
+
+    data_home = "/Users/sangarshananveera/Downloads/Datasets"
+
+    print(f"Loading track {track_id}...")
+    saraga_hindustani = compiam.load_dataset("saraga_hindustani", data_home=data_home)
+    st = saraga_hindustani.load_tracks()
+    track = st[track_id]
+    audio_path = track.audio_path
+    pitch_path = track.pitch_path
+
+    print(f"Loading annotations from {annotation_file}...")
+    df_raw = pd.read_csv(annotation_file, header=None)
+    anno = df_to_anno(df_raw)
+
+    print(f"Loading pitch data from {pitch_path}...")
+    df_pitch = pd.read_csv(pitch_path, sep="\t", header=None)
+    df_pitch.columns = ["time", "f0"]
+    df_pitch["log_f0"] = df_pitch["f0"].apply(
+        lambda x: np.log2(x) if x > 0 else np.nan
+    )
+
+    print(f"Loading audio from {audio_path}...")
+    y, sr = librosa.load(audio_path, sr=None)
+
+    print(f"\nShowing first {num_to_show} ornamentations:\n")
+    for i in range(min(num_to_show, len(anno))):
+        row = anno.iloc[i]
+        start_time = row["time_s"]
+        end_time = row["time_e"]
+        label = row["label"]
+
+        plot_start = max(0, start_time - 0.5)
+        plot_end = min(len(y) / sr, end_time + 0.5)
+
+        print(
+            f"{i+1}: {label} | Start: {start_time:.2f}s | End: {end_time:.2f}s | Duration: {row['duration']:.2f}s"
+        )
+
+        segment_pitch = df_pitch[
+            (df_pitch["time"] >= plot_start) & (df_pitch["time"] <= plot_end)
+        ]
+
+        plt.figure(figsize=(12, 4))
+        plt.plot(
+            segment_pitch["time"],
+            segment_pitch["log_f0"],
+            color="blue",
+            marker="o",
+            markersize=2,
+            linestyle="",
+        )
+        plt.axvspan(start_time, end_time, color="green", alpha=0.2, label="Ornamentation")
+        plt.ylabel("Log2(F0)")
+        plt.xlabel("Time (s)")
+        plt.title(f"Pitch Contour - {label}")
+        plt.legend()
+        plt.grid(True, linestyle="--", alpha=0.7)
+        plt.tight_layout()
+        plt.show()
+
+        orn_start_sample = int(start_time * sr)
+        orn_end_sample = int(end_time * sr)
+        y_orn = y[orn_start_sample:orn_end_sample]
+
+        display(Audio(y_orn, rate=sr))
+        print("-" * 80)

@@ -35,5 +35,5 @@ evaluation:
 
 data:
   saraga_data_home: "../Saraga/f0-annotations"       # Local Saraga annotations
-  ohv_data_path: "../Ornamentation-In-Hindustani-Vocals-Dataset"  # OHV CSV files
+  ohv_data_path: "Ornamentation-In-Hindustani-Vocals-Dataset"  # OHV CSV files
   f0_sample_period_s: 0.004444444     # Saraga f0 sampling period (~225 Hz)
