@@ -155,13 +155,3 @@ def validate_mapping(audio_base_dir, annotation_base_dir, annotator_filter=None)
                     print(f"  [OK] Annotator {annotator_id} ({ann_file}): Max annotation time ({max_time:.2f}s) fits within Audio duration ({audio_duration:.2f}s)")
         except Exception as e:
             print(f"  [!] Error processing {audio_path_prefix}: {e}")
-
-if __name__ == "__main__":
-    # Base directory for the uncompressed saraga dataset
-    AUDIO_BASE = "/Users/sangarshananveera/Downloads/Datasets/saraga1.5_hindustani"
-    
-    # Path to the ornamentation dataset
-    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-    ANNO_BASE = os.path.join(CURRENT_DIR, "Ornamentation-In-Hindustani-Vocals-Dataset")
-    
-    validate_mapping(AUDIO_BASE, ANNO_BASE)

@@ -231,7 +231,10 @@ def fetch_ornamentations(raga_name: str = "Aahir Bhairon", num_to_show: int = 5)
     track_id = data["track_id"]
     annotation_file = _PROJECT_ROOT / "Ornamentation-In-Hindustani-Vocals-Dataset" / list(data["annotators"].values())[0]
 
-    data_home = "/Users/sangarshananveera/Downloads/Datasets"
+    data_home = str(_PROJECT_ROOT.cwd()).replace(
+        "/ornament_classification/notebooks",
+        ""
+    )
 
     print(f"Loading track {track_id}...")
     saraga_hindustani = compiam.load_dataset("saraga_hindustani", data_home=data_home)

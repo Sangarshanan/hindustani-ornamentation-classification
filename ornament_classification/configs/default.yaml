@@ -34,6 +34,6 @@ evaluation:
   ld_substitution_weight: 1.0
 
 data:
-  saraga_data_home: "../Saraga/f0-annotations"       # Local Saraga annotations
+  saraga_data_home: ".."  # Relative to ornament_classification; resolves to repo root where saraga1.5_hindustani/ lives
   ohv_data_path: "Ornamentation-In-Hindustani-Vocals-Dataset"  # OHV CSV files
   f0_sample_period_s: 0.004444444     # Saraga f0 sampling period (~225 Hz)

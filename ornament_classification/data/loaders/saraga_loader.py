@@ -42,17 +42,25 @@ class SaragaTrack:
     phrases: Optional[List[Dict]] = None
 
 
+# Default data_home: one directory above ornament_classification
+# (i.e. the repo root where saraga1.5_hindustani/ lives)
+_DEFAULT_DATA_HOME = str(Path(__file__).resolve().parent.parent.parent.parent)
+
+
 class SaragaHindustaniLoader:
     """
     Loader for the Saraga Hindustani dataset using compiam.
 
     Parameters
     ----------
-    data_home : str or Path
+    data_home : str or Path or None
         Root directory passed to ``compiam.load_dataset`` as *data_home*.
+        If ``None``, uses the default Saraga download location.
     """
 
-    def __init__(self, data_home: str | Path) -> None:
+    def __init__(self, data_home: str | Path | None = None) -> None:
+        if data_home is None:
+            data_home = _DEFAULT_DATA_HOME
         self.data_home = Path(data_home).expanduser().resolve()
         self._dataset = compiam.load_dataset(
             "saraga_hindustani", data_home=str(self.data_home),
