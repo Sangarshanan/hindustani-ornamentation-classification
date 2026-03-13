@@ -114,7 +114,6 @@ class SaragaHindustaniLoader:
                 if isinstance(raw, dict):
                     raw = raw.get("common_name", raw.get("name", ""))
                 raga = str(raw).lower().strip()
-        raga = _RAGA_NAME_ALIASES.get(raga, raga)
 
         # --- sections ---
         sections = self._load_sections(ct)
