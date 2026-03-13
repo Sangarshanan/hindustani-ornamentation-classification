@@ -4,8 +4,5 @@ __pycache__/
 *$py.class
 .DS_Store
 **/paper/
-ornament_classification.egg-info/
-ornament_classification/build/*
-ornament_classification/dist/
-ornament_classification/src/hcm_transcription.egg-info/
 saraga1.5_hindustani/
+.venv/
