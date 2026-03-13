@@ -1,13 +1,5 @@
 """
 Saraga Hindustani dataset loader via compiam.
-
-Wraps ``compiam.load_dataset("saraga_hindustani")`` to provide a
-consistent :class:`SaragaTrack` dataclass used by the rest of the
-pipeline.
-
-Reference:
-  Srinivasamurthy et al. (2021) EMR. DOI: 10.18061/emr.v16i1.7492
-  compiam: https://mtg.github.io/compIAM/
 """
 
 from __future__ import annotations
@@ -21,13 +13,6 @@ import compiam
 import numpy as np
 
 logger = logging.getLogger(__name__)
-
-
-# Mapping from Saraga metadata raga names to raga_dict keys
-_RAGA_NAME_ALIASES: Dict[str, str] = {
-    "lalat": "lalit",
-    "lalit": "lalit",
-}
 
 
 @dataclass
