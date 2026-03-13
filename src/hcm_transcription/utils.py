@@ -218,18 +218,15 @@ def fetch_ornamentations(raga_name: str = "Aahir Bhairon", num_to_show: int = 5)
     audio_path = track.audio_path
     pitch_path = track.pitch_path
 
-    print(f"Loading annotations")
     df_raw = pd.read_csv(annotation_file, header=None)
     anno = df_to_anno(df_raw)
 
-    print(f"Loading pitch data")
     df_pitch = pd.read_csv(pitch_path, sep="\t", header=None)
     df_pitch.columns = ["time", "f0"]
     df_pitch["log_f0"] = df_pitch["f0"].apply(
         lambda x: np.log2(x) if x > 0 else np.nan
     )
 
-    print(f"Loading audio")
     y, sr = librosa.load(audio_path, sr=None)
 
     print(f"\nShowing first {num_to_show} ornamentations:\n")
