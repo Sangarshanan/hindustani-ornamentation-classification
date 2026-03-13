@@ -8,9 +8,8 @@ Saraga dataset: Srinivasamurthy et al. (2021) EMR. DOI: 10.18061/emr.v16i1.7492
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 import numpy as np
 import pandas as pd
@@ -150,7 +149,6 @@ ORNAMENT_MAPPING = {
     "o": "Other",
 }
 
-def _find_project_root() -> Path:
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
@@ -220,18 +218,18 @@ def fetch_ornamentations(raga_name: str = "Aahir Bhairon", num_to_show: int = 5)
     audio_path = track.audio_path
     pitch_path = track.pitch_path
 
-    print(f"Loading annotations from {annotation_file}...")
+    print(f"Loading annotations")
     df_raw = pd.read_csv(annotation_file, header=None)
     anno = df_to_anno(df_raw)
 
-    print(f"Loading pitch data from {pitch_path}...")
+    print(f"Loading pitch data")
     df_pitch = pd.read_csv(pitch_path, sep="\t", header=None)
     df_pitch.columns = ["time", "f0"]
     df_pitch["log_f0"] = df_pitch["f0"].apply(
         lambda x: np.log2(x) if x > 0 else np.nan
     )
 
-    print(f"Loading audio from {audio_path}...")
+    print(f"Loading audio")
     y, sr = librosa.load(audio_path, sr=None)
 
     print(f"\nShowing first {num_to_show} ornamentations:\n")
