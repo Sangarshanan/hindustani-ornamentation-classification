@@ -6,3 +6,4 @@ __pycache__/
 **/paper/
 saraga1.5_hindustani/
 .venv/
+src/hcm_transcription.egg-info/*
