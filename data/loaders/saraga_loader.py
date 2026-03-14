@@ -27,9 +27,9 @@ class SaragaTrack:
     phrases: Optional[List[Dict]] = None
 
 
-# Default data_home: one directory above ornament_classification
-# (i.e. the repo root where saraga1.5_hindustani/ lives)
-_DEFAULT_DATA_HOME = str(Path(__file__).resolve().parent.parent.parent.parent)
+
+# Default data_home: repo root where saraga1.5_hindustani/ lives
+_DEFAULT_DATA_HOME = str(Path(__file__).resolve().parents[2])
 
 
 class SaragaHindustaniLoader:
@@ -44,11 +44,8 @@ class SaragaHindustaniLoader:
     """
 
     def __init__(self, data_home: str | Path | None = None) -> None:
-        if data_home is None:
-            data_home = _DEFAULT_DATA_HOME
-        self.data_home = Path(data_home).expanduser().resolve()
         self._dataset = compiam.load_dataset(
-            "saraga_hindustani", data_home=str(self.data_home),
+            "saraga_hindustani", data_home=str(data_home),
         )
         self._tracks = self._dataset.load_tracks()
 
@@ -172,6 +169,38 @@ class SaragaHindustaniLoader:
                 "swaras": swaras,
             })
         return phrases or None
+
+    @staticmethod
+    def _load_tempos(ct) -> Optional[List[Dict]]:
+        """Extract tempo regions from a compiam track object."""
+        tempo_path = getattr(ct, "tempo_path", None)
+        if not tempo_path or not Path(tempo_path).exists():
+            return None
+        regions: List[Dict] = []
+        for line in Path(tempo_path).read_text().strip().splitlines():
+            raw = line.strip()
+            if not raw:
+                continue
+            parts = [p.strip() for p in raw.split(",")]
+            if len(parts) < 3:
+                parts = [p.strip() for p in raw.split("\t")]
+            if len(parts) < 3:
+                continue
+            label = parts[0]
+            try:
+                start = float(parts[1])
+                end = float(parts[2])
+            except ValueError:
+                continue
+            bpm = None
+            try:
+                bpm_val = float(label)
+                if bpm_val > 0:
+                    bpm = bpm_val
+            except ValueError:
+                bpm = None
+            regions.append({"start": start, "end": end, "label": label, "bpm": bpm})
+        return regions or None
 
     # ------------------------------------------------------------------
     # Section overrides for adaptive windower

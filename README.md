@@ -1,6 +1,6 @@
-# Hindustani Vocal Transcription v2
+# Hindustani Ornamentation Classification
 
-Algorithmic symbolic transcription of Hindustani classical vocals with **adaptive windowing**.
+Algorithmic ornamentation classification of Hindustani classical vocals with **adaptive windowing**.
 
 Extends the approach of [Jain & Arthur (2023)](https://doi.org/10.1145/3625135.3625137) presented at DLfM, introducing a density-driven adaptive windowing strategy that adjusts temporal resolution based on local melodic activity.
 

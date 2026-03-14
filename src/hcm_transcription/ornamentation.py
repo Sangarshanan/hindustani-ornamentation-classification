@@ -52,6 +52,7 @@ OHV_LABEL_MAP: Dict[str, str] = {
     "a":  "andolan",
     "mu": "murki",
     "g":  "gamak",
+    "kampit": "gamak",
     "kh": "khatka",
     "z":  "zamzama",
     "o":  "other",
@@ -88,14 +89,17 @@ class LabelMapper:
         canonical : str
             One of the canonical ornament names, ``"none"``, or ``"unknown"``.
         event_type : str
-            ``"start"``, ``"end"``, or ``"point"`` (for ``"none"``).
+            ``"start"``, ``"end"``, or ``"point"`` (for ``"none"`` or ``"*_s_e"``).
         """
         raw = raw.strip()
-        if raw.lower() in ("none", ""):
+        if raw.lower() in ("none", "nan", "null", ""):
             return "none", "point"
 
         # Determine if start or end
-        if raw.endswith("_s"):
+        if raw.endswith("_s_e"):
+            event_type = "point"
+            body = raw[:-4]
+        elif raw.endswith("_s"):
             event_type = "start"
             body = raw[:-2]
         elif raw.endswith("_e"):

@@ -119,6 +119,8 @@ class OHVLoader:
         open_events: dict = {}  # canonical -> onset time
 
         for _, row in df.iterrows():
+            if pd.isna(row["time"]) or pd.isna(row["label"]):
+                continue
             time_val = float(row["time"])
             raw_label = str(row["label"]).strip()
 
@@ -136,10 +138,17 @@ class OHVLoader:
                         label=canonical,
                     ))
                 else:
-                    logger.warning(
-                        "End label '%s' without matching start at time %.3f",
-                        canonical, time_val,
-                    )
+                    annotations.append(OrnamentAnnotation(
+                        onset=time_val,
+                        offset=time_val,
+                        label=canonical,
+                    ))
+            elif event_type == "point":
+                annotations.append(OrnamentAnnotation(
+                    onset=time_val,
+                    offset=time_val,
+                    label=canonical,
+                ))
 
         # Warn for unclosed events
         for label, onset in open_events.items():

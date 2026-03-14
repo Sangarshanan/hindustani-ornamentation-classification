@@ -31,7 +31,7 @@ MAPPING = {
         "annotators": {"rj": "Bairagi_rj.csv"}
     },
 
-    "Bhairavi": {
+    "Bhairavi Dadra": {
         "mbid": "f5d00c2d-5ca1-4a49-bb38-1af3496e6dfc",
         "artist": "Omkar Dadarkar",
         "audio_path": "Raag Bihag & Bhairavi Dadra by Omkar Dadarkar/Bhairavi Dadra/Bhairavi Dadra",
@@ -100,7 +100,7 @@ MAPPING = {
         }
     },
 
-    "Majh Khamaj": {
+    "Majh Khamaj Thumri": {
         "mbid": "6bb27c39-a1d0-4775-8915-662044c43352",
         "artist": "Satyasheel Deshpande",
         "audio_path": "Raag Malkauns, Chandrakauns & Majh Khamaj Thumri by Satyasheel Deshpande/Majh Khamaj Thumri/Majh Khamaj Thumri",
