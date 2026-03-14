@@ -12,7 +12,8 @@ MAPPING = {
         "artist": "Ajoy Chakrabarty",
         "audio_path": "Geetinandan : Part-3 by Ajoy Chakrabarty/Aahir Bhairon/Aahir Bhairon",
         "track_id": "66_Aahir_Bhairon",
-        "raga_idx": 19,  # ahir_bhairon
+        "raga_key": "ahir_bhairon",
+        "raga_idx": 19,
         "duration_str": "9:49",
         "duration_s": 589,
         "annotation_end_s": 589,
@@ -24,7 +25,8 @@ MAPPING = {
         "artist": "Ajoy Chakrabarty",
         "audio_path": "Geetinandan : Part-3 by Ajoy Chakrabarty/Bairagi/Bairagi",
         "track_id": "59_Bairagi",
-        "raga_idx": 4,  # bairagi
+        "raga_key": "bairagi",
+        "raga_idx": 4,
         "duration_str": "14:59",
         "duration_s": 899,
         "annotation_end_s": 899,
@@ -36,7 +38,8 @@ MAPPING = {
         "artist": "Omkar Dadarkar",
         "audio_path": "Raag Bihag & Bhairavi Dadra by Omkar Dadarkar/Bhairavi Dadra/Bhairavi Dadra",
         "track_id": "80_Bhairavi_Dadra",
-        "raga_idx": 8,  # bhairavi_dadra (track title in Saraga)
+        "raga_key": "bhairavi_dadra",
+        "raga_idx": 8,
         "duration_str": "10:02",
         "duration_s": 602,
         "annotation_end_s": 602,
@@ -48,7 +51,8 @@ MAPPING = {
         "artist": "Brajeshwar Mukherjee",
         "audio_path": "New Signature by Brajeshwar Mukherjee/Irani Bhairavi Thumri/Irani Bhairavi Thumri",
         "track_id": "50_Irani_Bhairavi_Thumri",
-        "raga_idx": 5,  # irani_bhairavi
+        "raga_key": "irani_bhairavi",
+        "raga_idx": 5,
         "duration_str": "6:00",
         "duration_s": 360,
         "annotation_end_s": 360,
@@ -63,7 +67,8 @@ MAPPING = {
         "artist": "Ajoy Chakrabarty",
         "audio_path": "Geetinandan : Part-3 by Ajoy Chakrabarty/Kalavati/Kalavati",
         "track_id": "73_Kalavati",
-        "raga_idx": 52,  # kalavati
+        "raga_key": "kalavati",
+        "raga_idx": 52,
         "duration_str": "5:43",
         "duration_s": 343,
         "annotation_end_s": 343,
@@ -75,7 +80,8 @@ MAPPING = {
         "artist": "Ajoy Chakrabarty",
         "audio_path": "Geetinandan : Part-3 by Ajoy Chakrabarty/Malkauns/Malkauns",
         "track_id": "62_Malkauns",
-        "raga_idx": 18,  # malkauns
+        "raga_key": "malkauns",
+        "raga_idx": 18,
         "duration_str": "5:33",
         "duration_s": 333,
         "annotation_end_s": 333,
@@ -90,7 +96,8 @@ MAPPING = {
         "artist": "Satyasheel Deshpande",
         "audio_path": "Raag Malkauns, Chandrakauns & Majh Khamaj Thumri by Satyasheel Deshpande/Raag Chandrakauns/Raag Chandrakauns",
         "track_id": "54_Raag_Chandrakauns",
-        "raga_idx": 14,  # chandrakauns
+        "raga_key": "chandrakauns",
+        "raga_idx": 14,
         "duration_str": "3:56",
         "duration_s": 236,
         "annotation_end_s": 236,
@@ -105,7 +112,8 @@ MAPPING = {
         "artist": "Satyasheel Deshpande",
         "audio_path": "Raag Malkauns, Chandrakauns & Majh Khamaj Thumri by Satyasheel Deshpande/Majh Khamaj Thumri/Majh Khamaj Thumri",
         "track_id": "55_Majh_Khamaj_Thumri",
-        "raga_idx": 17,  # majh_khamaj_thumri
+        "raga_key": "majh_khamaj_thumri",
+        "raga_idx": 17,
         "duration_str": "5:19",
         "duration_s": 319,
         "annotation_end_s": 319,
@@ -117,7 +125,8 @@ MAPPING = {
         "artist": "Ajoy Chakrabarty",
         "audio_path": "Geetinandan : Part-3 by Ajoy Chakrabarty/Nat Bhairon/Nat Bhairon",
         "track_id": "65_Nat_Bhairon",
-        "raga_idx": 32,  # nat_bhairav (closest match)
+        "raga_key": "nat_bhairav",
+        "raga_idx": 32,
         "duration_str": "10:38",
         "duration_s": 638,
         "annotation_end_s": 638,
@@ -129,7 +138,8 @@ MAPPING = {
         "artist": "Ajoy Chakrabarty",
         "audio_path": "Geetinandan : Part-3 by Ajoy Chakrabarty/Raageshree/Raageshree",
         "track_id": "68_Raageshree",
-        "raga_idx": 39,  # raageshree
+        "raga_key": "raageshree",
+        "raga_idx": 39,
         "duration_str": "8:12",
         "duration_s": 492,
         "annotation_end_s": 492,
@@ -141,7 +151,8 @@ MAPPING = {
         "artist": "Ajoy Chakrabarty",
         "audio_path": "Geetinandan : Part-3 by Ajoy Chakrabarty/Todi/Todi",
         "track_id": "64_Todi",
-        "raga_idx": 28,  # todi
+        "raga_key": "todi",
+        "raga_idx": 28,
         "duration_str": "9:01",
         "duration_s": 541,
         "annotation_end_s": 541,

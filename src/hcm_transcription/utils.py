@@ -7,6 +7,7 @@ Saraga dataset: Srinivasamurthy et al. (2021) EMR. DOI: 10.18061/emr.v16i1.7492
 
 from __future__ import annotations
 
+import os
 import json
 from pathlib import Path
 from typing import Dict, List
@@ -14,6 +15,9 @@ from typing import Dict, List
 import numpy as np
 import pandas as pd
 import yaml
+
+import compiam
+from hcm_transcription.mapping import MAPPING
 
 
 # ---------------------------------------------------------------------------
@@ -135,10 +139,9 @@ def cents_to_ratio(cents: float) -> float:
     return 2.0 ** (cents / 1200.0)
 
 
-# ---------------------------------------------------------------------------
 # Ornamentation annotation helpers
-# ---------------------------------------------------------------------------
 ORNAMENT_MAPPING = {
+    # Standard abbreviations
     "k": "Kan",
     "g": "Gamak",
     "mu": "Murki",
@@ -147,47 +150,95 @@ ORNAMENT_MAPPING = {
     "kh": "Khatka",
     "z": "Zamzama",
     "o": "Other",
+    # Alternate abbreviations found in some annotations
+    "m": "Meend",
+    "kan": "Kan",
+    "gamak": "Gamak",
+    "murki": "Murki",
+    "meend": "Meend",
+    "andolan": "Andolan",
+    "khatka": "Khatka",
+    "zamzama": "Zamzama",
+    # Other ornament types
+    "thaan": "Thaan",
+}
+
+# What we will predict in the end
+TARGET_LABELS = {
+    "Kan", "Meend", "Murki", "Andolan"
 }
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
-def df_to_anno(df: pd.DataFrame) -> pd.DataFrame:
+def df_to_anno(df: pd.DataFrame, verbose: bool = False) -> pd.DataFrame:
     """
     Parse an annotation CSV into a structured DataFrame with start/end times.
+    
+    Uses a stack-based approach to match _s (start) markers with their corresponding
+    _e (end) markers, handling nested/overlapping annotations and data quality issues.
+    
+    Args:
+        df: DataFrame with columns [time, label]
+        verbose: If True, print warnings for unexpected patterns
+    
+    Returns:
+        DataFrame with columns [time_s, time_e, label, duration]
     """
-    all_index = []
+    df = df.copy()
     df.columns = ["time", "label"]
-
-    for index, label in enumerate(df.label):
-        if label == "none" or label == "" or label == "Q":
-            all_index.append(index)
-
-    df_new = df.drop(all_index).reset_index(drop=True)
-
+    
+    # Filter out invalid labels (none, empty, Q, NaN)
+    df = df[~df["label"].isin(["none", "", "Q"])]
+    df = df[df["label"].notna()]
+    df = df[df["label"].apply(lambda x: str(x).lower() != "nan")]
+    df = df.reset_index(drop=True)
+    
     time_s, time_e, labels = [], [], []
-
-    for i in range(0, len(df_new) - 1, 2):
-        s, e = i, i + 1
-        label_s = str(df_new["label"].iloc[s])
-        label_e = str(df_new["label"].iloc[e])
-
-        if label_s.endswith("_s") and label_e.endswith("_e"):
-            time_s.append(df_new["time"].iloc[s])
-            time_e.append(df_new["time"].iloc[e])
-
-            raw_label = label_s[:-2]
-            if raw_label.startswith("c_"):
-                parts = raw_label.split("_")[1:]
-                mapped_parts = [ORNAMENT_MAPPING.get(p, p) for p in parts]
-                labels.append(" + ".join(mapped_parts))
+    open_ornaments = {}  # base_label -> (start_time, original_label)
+    
+    for idx, row in df.iterrows():
+        label = str(row["label"]).strip()
+        time = row["time"]
+        
+        # Skip non-ornament markers
+        if not (label.endswith("_s") or label.endswith("_e")):
+            if verbose:
+                print(f"Warning: Skipping non-ornament label at index {idx}: {label}")
+            continue
+        
+        if label.endswith("_s"):
+            # Start marker - push onto stack
+            base_label = label[:-2]
+            if base_label in open_ornaments and verbose:
+                print(f"Warning: Duplicate start at index {idx}: {label} (previous not closed)")
+            open_ornaments[base_label] = (time, label)
+            
+        elif label.endswith("_e"):
+            # End marker - try to match with corresponding start
+            base_label = label[:-2]
+            
+            if base_label in open_ornaments:
+                start_time, start_label = open_ornaments.pop(base_label)
+                time_s.append(start_time)
+                time_e.append(time)
+                
+                # Map ornament label
+                if base_label.startswith("c_"):
+                    parts = base_label.split("_")[1:]
+                    mapped_parts = [ORNAMENT_MAPPING.get(p, p) for p in parts]
+                    labels.append(" + ".join(mapped_parts))
+                else:
+                    labels.append(ORNAMENT_MAPPING.get(base_label, base_label))
             else:
-                labels.append(ORNAMENT_MAPPING.get(raw_label, raw_label))
-        else:
-            print(
-                f"Warning: Unexpected pair at index {i}: {label_s}, {label_e}"
-            )
-
+                if verbose:
+                    print(f"Warning: Orphaned end marker at index {idx}: {label}")
+    
+    # Warn about unclosed ornaments
+    if verbose and open_ornaments:
+        for base_label, (start_time, start_label) in open_ornaments.items():
+            print(f"Warning: Unclosed ornament: {start_label} at time {start_time:.2f}s")
+    
     anno = pd.DataFrame({"time_s": time_s, "time_e": time_e, "label": labels})
     anno["duration"] = anno["time_e"] - anno["time_s"]
     return anno
@@ -195,11 +246,9 @@ def df_to_anno(df: pd.DataFrame) -> pd.DataFrame:
 
 def fetch_ornamentations(raga_name: str = "Aahir Bhairon", num_to_show: int = 5):
     """Load a Saraga Hindustani track and display ornamentation segments."""
-    import compiam
     import librosa
     import matplotlib.pyplot as plt
     from IPython.display import Audio, display
-    from hcm_transcription.mapping import MAPPING
 
     if raga_name not in MAPPING:
         print(f"Raga '{raga_name}' not found in mapping.py")
@@ -271,3 +320,70 @@ def fetch_ornamentations(raga_name: str = "Aahir Bhairon", num_to_show: int = 5)
 
         display(Audio(y_orn, rate=sr))
         print("-" * 80)
+
+
+def extract_ornament_segments(raga_names, data_home, annotation_base="Ornamentation-In-Hindustani-Vocals-Dataset"):
+
+    segments = []
+
+    for raga_name in raga_names:
+        if raga_name not in MAPPING:
+            print(f"Skipping {raga_name} - not in MAPPING")
+            continue
+
+        data = MAPPING[raga_name]
+        annotation_file = f"{annotation_base}/{list(data['annotators'].values())[0]}"
+
+        # Build pitch path directly from audio_path — no compiam needed
+        pitch_path = f"{data_home}/saraga1.5_hindustani/{data['audio_path']}.pitch.txt"
+
+        print(f"Loading {raga_name}...")
+        print(f"  Pitch: {pitch_path}")
+
+        if not os.path.exists(pitch_path):
+            print(f"  WARNING: pitch file not found, skipping")
+            continue
+
+        if not os.path.exists(annotation_file):
+            print(f"  WARNING: annotation file not found, skipping")
+            continue
+        # Load pitch data
+        df_pitch = pd.read_csv(pitch_path, sep="\t", header=None)
+        df_pitch.columns = ["time", "f0"]
+        df_pitch["log_f0"] = df_pitch["f0"].apply(lambda x: np.log2(x) if x > 0 else np.nan)
+
+        # Load annotations
+        df_raw = pd.read_csv(annotation_file, header=None)
+        anno = df_to_anno(df_raw)
+
+        # Filter to target labels only
+        anno_filtered = anno[anno['label'].isin(TARGET_LABELS)].reset_index(drop=True)
+        print(f"  Found {len(anno_filtered)} target ornaments out of {len(anno)} total")
+
+        for _, row in anno_filtered.iterrows():
+            mask = (df_pitch["time"] >= row['time_s']) & (df_pitch["time"] <= row['time_e'])
+            segment_pitch = df_pitch[mask]["log_f0"].values
+
+            if len(segment_pitch) == 0 or np.isnan(segment_pitch).mean() > 0.3:
+                continue
+
+            segment_pitch = pd.Series(segment_pitch).interpolate().fillna(0).values
+
+            segments.append({
+                "raga": raga_name,
+                "label": row['label'],
+                "time_s": row['time_s'],
+                "time_e": row['time_e'],
+                "duration": row['duration'],
+                "pitch_curve": segment_pitch
+            })
+
+    # Summary
+    df_segments = pd.DataFrame([{k: v for k, v in s.items() if k != "pitch_curve"} 
+                                  for s in segments])
+    print(f"\n=== Extraction Summary ===")
+    print(f"Total segments: {len(segments)}")
+    print(f"Label distribution:\n{df_segments['label'].value_counts()}")
+    print(f"Duration stats:\n{df_segments['duration'].describe()}")
+
+    return segments
