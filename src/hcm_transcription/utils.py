@@ -7,6 +7,7 @@ Saraga dataset: Srinivasamurthy et al. (2021) EMR. DOI: 10.18061/emr.v16i1.7492
 
 from __future__ import annotations
 
+from collections import Counter
 import os
 import json
 from pathlib import Path
@@ -168,7 +169,90 @@ TARGET_LABELS = {
     "Kan", "Meend", "Murki", "Andolan"
 }
 
+# Collapse the paper's 7 annotated classes into the 4 prediction classes.
+TARGET_LABEL_GROUPS = {
+    "Kan": "Kan",
+    "Khatka": "Kan",
+    "Meend": "Meend",
+    "Murki": "Murki",
+    "Gamak": "Murki",
+    "Zamzama": "Murki",
+    "Andolan": "Andolan",
+}
+
+TARGET_LABEL_ALIASES = {
+    "k": "Kan",
+    "k_": "Kan",
+    "kan": "Kan",
+    "khatka": "Kan",
+    "m": "Meend",
+    "me": "Meend",
+    "meend": "Meend",
+    "mu": "Murki",
+    "murki": "Murki",
+    "g": "Murki",
+    "gamak": "Murki",
+    "z": "Murki",
+    "zamzama": "Murki",
+    "thaan": "Murki",
+    "taan": "Murki",
+    "than": "Murki",
+    "a": "Andolan",
+    "andolan": "Andolan",
+    "kampan": "Andolan",
+    "kampit": "Andolan",
+    "vibrato": "Andolan",
+    "soft_gamak": "Murki",
+    "multiple_karn": "Kan",
+}
+
+# Based on label distribution.
+TARGET_LABEL_PRIORITY = {
+    "Andolan": 0,
+    "Murki": 1,
+    "Meend": 2,
+    "Kan": 3,
+}
+
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+
+
+def normalize_target_label(label: str) -> str | None:
+    """Map fine-grained or composite ornament labels to reduced target classes."""
+    cleaned_label = label.strip()
+    if not cleaned_label:
+        return None
+
+    direct_match = TARGET_LABEL_GROUPS.get(cleaned_label)
+    if direct_match is not None:
+        return direct_match
+
+    normalized_parts = []
+    for part in cleaned_label.split("+"):
+        token = part.strip().strip("_")
+        if not token:
+            continue
+
+        lowered_token = token.lower()
+
+        mapped_label = TARGET_LABEL_GROUPS.get(token)
+        if mapped_label is None:
+            mapped_label = TARGET_LABEL_ALIASES.get(lowered_token)
+
+        if mapped_label is None and lowered_token.startswith("o_"):
+            mapped_label = TARGET_LABEL_ALIASES.get(lowered_token[2:])
+
+        if mapped_label is not None:
+            normalized_parts.append(mapped_label)
+
+    if not normalized_parts:
+        return None
+
+    label_counts = Counter(normalized_parts)
+    return min(
+        label_counts.items(),
+        key=lambda item: (-item[1], TARGET_LABEL_PRIORITY[item[0]]),
+    )[0]
 
 
 def df_to_anno(df: pd.DataFrame, verbose: bool = False) -> pd.DataFrame:
@@ -325,6 +409,7 @@ def fetch_ornamentations(raga_name: str = "Aahir Bhairon", num_to_show: int = 5)
 def extract_ornament_segments(raga_names, data_home, annotation_base="Ornamentation-In-Hindustani-Vocals-Dataset"):
 
     segments = []
+    skipped_labels = set()
 
     for raga_name in raga_names:
         if raga_name not in MAPPING:
@@ -355,6 +440,14 @@ def extract_ornament_segments(raga_names, data_home, annotation_base="Ornamentat
         # Load annotations
         df_raw = pd.read_csv(annotation_file, header=None)
         anno = df_to_anno(df_raw)
+        skipped_labels.update(
+            label for label in anno["label"].dropna().unique()
+            if normalize_target_label(label) is None
+        )
+
+        # Collapse fine-grained annotations into the reduced target classes
+        # used by the model, following the paper.
+        anno = anno.assign(label=anno["label"].map(normalize_target_label))
 
         # Filter to target labels only
         anno_filtered = anno[anno['label'].isin(TARGET_LABELS)].reset_index(drop=True)
@@ -385,5 +478,6 @@ def extract_ornament_segments(raga_names, data_home, annotation_base="Ornamentat
     print(f"Total segments: {len(segments)}")
     print(f"Label distribution:\n{df_segments['label'].value_counts()}")
     print(f"Duration stats:\n{df_segments['duration'].describe()}")
+    print(f"Skipped ornamentations: {sorted(skipped_labels)}")
 
     return segments
