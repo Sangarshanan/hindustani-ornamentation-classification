@@ -511,6 +511,9 @@ class AdaptiveWindower(BaseWindower):
     ) -> tuple[np.ndarray, np.ndarray]:
         """
         Compute instability with per-position adaptive frame sizes.
+        Uses actual swara labels for density, and rescales the instability
+        by the ratio of adaptive-to-static frame counts so the threshold
+        operates on a comparable scale.
 
         Returns instability values at variable positions along with their
         corresponding time stamps.
