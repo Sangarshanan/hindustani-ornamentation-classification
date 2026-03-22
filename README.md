@@ -45,8 +45,8 @@ This study uses two datasets:
 
 | Dataset | Description | Contents |
 |---------|-------------|----------|
-| **Saraga 1.5 Hindustani** (`saraga1.5_hindustani/`) | Audio recordings with f0 pitch contours, tonic annotations, and section metadata. Loaded via [compiam](https://github.com/MTG/compIAM). | 30+ albums, each containing ragas with `.pitch.txt`, `.ctonic.txt`, and audio files. |
-| **OHV** (`Ornamentation-In-Hindustani-Vocals-Dataset/`) | Expert-annotated ornament boundaries across 11 Hindustani ragas (14 CSV files, 1768 ornament instances). | Paired start/end labels (`k_s`/`k_e`, `me_s`/`me_e`, etc.) by 5 annotators. |
+| [**Saraga 1.5 Hindustani**](https://zenodo.org/records/4301737) (`saraga1.5_hindustani/`) | Audio recordings with f0 pitch contours, tonic annotations, and section metadata. Loaded via [compiam](https://github.com/MTG/compIAM). | 30+ albums, each containing ragas with `.pitch.txt`, `.ctonic.txt`, and audio files. |
+| [**OHV**](https://github.com/rhythmjain/automated-symbolic-transcription-hindustani-vocals/blob/main/Ornamentation-In-Hindustani-Vocals-Dataset/ornamentation-procedure/annotator-readme.md) (`Ornamentation-In-Hindustani-Vocals-Dataset/`) | Expert-annotated ornament boundaries across 11 Hindustani ragas (14 CSV files, 1768 ornament instances). | Paired start/end labels (`k_s`/`k_e`, `me_s`/`me_e`, etc.) by 5 annotators. |
 
 The mapping between OHV annotations and Saraga tracks is defined in `src/hcm_transcription/mapping.py`, covering 11 ragas: Aahir Bhairon, Bairagi, Bhairavi Dadra, Irani Bhairavi, Kalavati, Malkauns, Chandrakauns, Majh Khamaj Thumri, Nat Bhairon, Raageshree, and Todi.
 
