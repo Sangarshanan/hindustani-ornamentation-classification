@@ -39,6 +39,8 @@ In addition to the rule-based classifier, a Temporal Convolutional Network (TCN)
 
 The TCN is trained on ornament segments extracted from the OHV-annotated Saraga tracks and achieves comparable F1 scores to the rule-based approach while better capturing shape-level distinctions between ornament types.
 
+![TCN Classifier Architecture](https://github.com/Sangarshanan/hindustani-ornamentation-classification/raw/main/media/tcn.png)
+
 ## Datasets
 
 This study uses two datasets:
