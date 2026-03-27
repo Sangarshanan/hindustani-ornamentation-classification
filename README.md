@@ -75,7 +75,7 @@ hindustani-ornamentation-classification/
 │   ├── demo_executed_final.ipynb       # Full pipeline demo: static vs adaptive windowing evaluation
 │   ├── data-analysis.ipynb             # Exploratory data analysis: instability curves, unstable regions per raga
 │   ├── ornamentations_analysis.ipynb   # OHV annotation validation and ornamentation visualisation
-│   ├── TCN_experiments.ipynb           # TCN training, cross-validation, ablation (fixed/adaptive/TPP)
+│   ├── TCN_Final.ipynb                 # TCN training, cross-validation, ablation (fixed/adaptive/TPP)
 │   ├── inference.ipynb                 # TCN inference on unseen Hindustani flute recordings
 │   ├── model_definitions.py            # OrnamentTCN architecture (ResidualBlock + classifier)
 │   └── checkpoints/
@@ -116,13 +116,13 @@ Analyses the preprocessed pitch data across all tracks:
 - Aggregates statistics per raga: mean instability, proportion of unstable frames.
 - Extracts contiguous unstable regions with timestamps and plots duration distributions per raga.
 
-### [`TCN_experiments.ipynb`](notebooks/TCN_experiments.ipynb) — TCN Training & Experiments
+### [`TCN_Final.ipynb`](notebooks/TCN_Final.ipynb) — TCN Training & Experiments
 Trains and evaluates the Temporal Convolutional Network for ornament classification:
 - Extracts ornament pitch-curve segments from Saraga tracks using OHV annotations.
 - Prepares fixed-length and variable-length input representations.
-- Experiments with multiple architectures: 4-layer TCN, 6-layer TCN, and TCN with Temporal Pyramid Pooling (TPP).
+- Experiments with multiple architectures: 4-layer TCN, 6-layer TCN, TCN with Temporal Pyramid Pooling (TPP) and TCN with Attention Pooling.
 - Applies data augmentation (time stretching) and balanced class weighting.
-- Runs 5-fold stratified cross-validation and reports per-class precision/recall/F1.
+- Runs validation and reports per-class precision/recall/F1.
 - Visualises misclassified examples and correct vs incorrect predictions per class.
 
 ### [`ornamentations_analysis.ipynb`](notebooks/ornamentations_analysis.ipynb) — Annotation Validation
