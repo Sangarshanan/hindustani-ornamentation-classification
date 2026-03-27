@@ -120,7 +120,7 @@ Analyses the preprocessed pitch data across all tracks:
 Trains and evaluates the Temporal Convolutional Network for ornament classification:
 - Extracts ornament pitch-curve segments from Saraga tracks using OHV annotations.
 - Prepares fixed-length and variable-length input representations.
-- Experiments with multiple architectures: 4-layer TCN, 6-layer TCN, TCN with Temporal Pyramid Pooling (TPP) and TCN with Attention Pooling.
+- Experiments with multiple architectures: 6-layer TCN, variation with Temporal Pyramid Pooling (TPP) and variation with Attention Pooling.
 - Applies data augmentation (time stretching) and balanced class weighting.
 - Runs validation and reports per-class precision/recall/F1.
 - Visualises misclassified examples and correct vs incorrect predictions per class.
