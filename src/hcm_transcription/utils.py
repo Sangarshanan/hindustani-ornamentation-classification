@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
-import compiam
+#import compiam
 from hcm_transcription.mapping import MAPPING
 
 
@@ -166,7 +166,7 @@ ORNAMENT_MAPPING = {
 
 # What we will predict in the end
 TARGET_LABELS = {
-    "Kan", "Meend", "Murki", "Andolan"
+    "Kan", "Meend", "Murki", "Andolan", "Gamak", "NyasSvar"
 }
 
 # Collapse the paper's 7 annotated classes into the 4 prediction classes.
@@ -178,7 +178,25 @@ TARGET_LABEL_GROUPS = {
     "Gamak": "Murki",
     "Zamzama": "Murki",
     "Andolan": "Andolan",
+    # ROD exact labels
+    "K": "Kan",
+    "K ": "Kan",        # trailing space
+    "K1": "Kan",
+    "Me": "Meend",
+    "Me1": "Meend",
+    "Me  ": "Meend",    # two trailing spaces
+    "Mu": "Murki",
+    "Mu ": "Murki",     # trailing space
+    "Mu1": "Murki",
+    "An": "Andolan",
+    "G": "Gamak",
+    "H": "NyasSvar",
+    "H ": "NyasSvar",   # trailing space
+    "H  ": "NyasSvar",  # two trailing spaces
+    "M": "Meend",
+    "k": "Kan",         # lowercase
 }
+
 
 TARGET_LABEL_ALIASES = {
     "k": "Kan",
@@ -190,7 +208,7 @@ TARGET_LABEL_ALIASES = {
     "meend": "Meend",
     "mu": "Murki",
     "murki": "Murki",
-    "g": "Murki",
+    #"g": "Murki",
     "gamak": "Murki",
     "z": "Murki",
     "zamzama": "Murki",
@@ -204,6 +222,15 @@ TARGET_LABEL_ALIASES = {
     "vibrato": "Andolan",
     "soft_gamak": "Murki",
     "multiple_karn": "Kan",
+    # ROD aliases (lowercased after strip)
+    "an": "Andolan",
+    "k1": "Kan",
+    "me1": "Meend",
+    "mu1": "Murki",
+    "h": "NyasSvar",
+    "nyassvar": "NyasSvar",
+    "nyas": "NyasSvar",
+    "g": "Gamak"
 }
 
 # Based on label distribution.
@@ -212,6 +239,8 @@ TARGET_LABEL_PRIORITY = {
     "Murki": 1,
     "Meend": 2,
     "Kan": 3,
+    "Gamak": 4,
+    "NyasSvar": 5,
 }
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -420,7 +449,8 @@ def extract_ornament_segments(raga_names, data_home, annotation_base="Ornamentat
         annotation_file = f"{annotation_base}/{list(data['annotators'].values())[0]}"
 
         # Build pitch path directly from audio_path — no compiam needed
-        pitch_path = f"{data_home}/saraga1.5_hindustani/{data['audio_path']}.pitch.txt"
+        #pitch_path = f"{data_home}/saraga1.5_hindustani/{data['audio_path']}.pitch.txt"
+        pitch_path = f"{data_home}/saraga1.5_hindustani/{data['audio_path'].replace(' : ', ' _ ')}.pitch.txt"
 
         print(f"Loading {raga_name}...")
         print(f"  Pitch: {pitch_path}")
